@@ -1,0 +1,196 @@
+#include <iostream>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/tads/Coll.hpp"
+#include "biblioteca/tads/BitWriter.hpp"
+#include "biblioteca/funciones/strings.hpp"
+#include "mistads/BigInt.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/funciones/files.hpp"
+using namespace std;
+//Estrategia: Sumar los puntos a los equipos segun los resultados y ordenarlos de mayor a menor.
+//A medida que se ingresan los resultados anotar los partidos en cada estadio y los que se empataron.
+//El archivo de novedades es RESULTADOS y el de movimiento es EQUIPOS.
+//Para poder actualizar el archivo de EQUIPOS se puede indexear.
+
+struct Equipos
+{
+   int idEq;
+   string nombre;
+   int puntos;
+   int idDes;
+};
+struct Resultado
+{
+   int idEq1;
+   int idEq2;
+   int codRes;
+   string estadio;
+};
+struct Estadio
+{
+   string nombre;
+   int partidos;
+   int empatados;
+};
+
+string equiposToString(Equipos eq)
+{
+   string x;
+   x = intToString(eq.idEq)+','+eq.nombre+','+intToString(eq.puntos)+','+intToString(eq.idDes);
+   return x;
+}
+Equipos equiposFromString(string s)
+{
+   Equipos x;
+   x.idEq = stringToInt(getTokenAt(s,',',0));
+   x.nombre = getTokenAt(s,',',1);
+   x.puntos = stringToInt(getTokenAt(s,',',2));
+   x.idDes = stringToInt(getTokenAt(s,',',3));
+   return x;
+}
+int cmpEquiposxId(Equipos eq, int idEq)
+{
+   return eq.idEq==idEq?1:-1;
+}
+Coll<Equipos> eqColl(FILE* f)
+{
+   Coll<Equipos> x = collCreate<Equipos>();
+   f = fopen("EQUIPOS","r+b");
+   Equipos eq = read<Equipos>(f);
+   int a;
+   while( !feof(f) )
+   {
+      a = collAdd(x,eq,equiposToString);
+      eq = read<Equipos>(f);
+   }
+   return x;
+}
+void actualizarPuntos(Coll<Equipos>& equipos, int idEq, int resultado)
+{
+   int pos = collFind(equipos,idEq,cmpEquiposxId,equiposFromString);
+   Equipos eq = collGetAt(equipos,pos,equiposFromString);
+   if( resultado!=0 )
+   {
+      eq.puntos += 3;
+   }
+   else
+   {
+      eq.puntos += 1;
+   }
+   collRemoveAt(equipos,pos);
+   collSetAt(equipos,eq,pos,equiposToString);
+}
+void actualizarPuntos(Coll<Equipos>& equipos, int idEq1, int idEq2, int resultado)
+{
+   actualizarPuntos(equipos,idEq1,resultado);
+   actualizarPuntos(equipos,idEq2,resultado);
+}
+Estadio estadioFromString(string s)
+{
+   Estadio x;
+   x.nombre = getTokenAt(s,',',0);
+   x.partidos = stringToInt(getTokenAt(s,',',1));
+   x.empatados = stringToInt(getTokenAt(s,',',2));
+   return x;
+}
+int cmpEstadioxNombre(Estadio es, string nom)
+{
+   return es.nombre==nom?1:-1;
+}
+string estadioToString(Estadio est)
+{
+   string x;
+   x = est.nombre+','+intToString(est.partidos)+','+intToString(est.empatados);
+   return x;
+}
+void actualizarEstadio(Coll<Estadio>& c, Resultado res)
+{
+   int pos = collFind(c,res.estadio,cmpEstadioxNombre,estadioFromString);
+   Estadio est;
+   if( pos<0 )
+   {
+      int i = collAdd(c,est,estadioToString);
+      pos = collSize(c);
+      i++;
+   }
+   est = collGetAt(c,pos,estadioFromString);
+   est.partidos += 1;
+   if( res.codRes==0 )
+   {
+      est.empatados += 1;
+   }
+   collRemoveAt(c,pos);
+   collSetAt(c,est,pos,estadioToString);
+}
+int cmpPuntosXPuntos(Equipos eq1, Equipos eq2)
+{
+   return eq1.puntos==eq2.puntos?0:eq1.puntos>eq2.puntos?1:-1;
+}
+void ordenarEquipos(Coll<Equipos>& f)
+{
+   collSort(f,cmpPuntosXPuntos,equiposFromString,equiposToString);
+}
+void mostrarTabla(Coll<Equipos> f)
+{
+   collReset(f);
+   Equipos eq;
+   int a = 1;
+   while( collHasNext(f) )
+   {
+      eq = collNext(f,equiposFromString);
+      cout<<a<<"° equipo: "<<eq.nombre<<endl;
+      a++;
+   }
+
+}
+void mostrarEstadios(Coll<Estadio> c)
+{
+   collReset(c);
+   Estadio est;
+   while( collHasNext(c) )
+   {
+      est = collNext(c,estadioFromString);
+      cout<<"En el estadio "<<est.nombre<<" se jugaron "<<est.partidos<<" partidos de los cuales "<<est.empatados<<" resultaron en empate."<<endl;
+   }
+}
+
+int main()
+{
+   //Abro el archivo de resultados
+   FILE* RESULTADOS = fopen("RESULTADOS","r+b");
+   //Creo la variable que contendra al archivo equipos
+   FILE* EQUIPOS = fopen("EQUIPOS","r+b");
+   //Formo una coleccion con el archivo equipos
+   Coll<Equipos> equipos = eqColl(EQUIPOS);
+   //Creo una coleccion para guardar el nombre del estadio y dos contadores(uno para partidos y otro para empates)
+   Coll<Estadio> estadio = collCreate<Estadio>();
+   //leo el primer resultado
+   Resultado res = read<Resultado>(RESULTADOS);
+   //itero para leer el archivo resultados
+   while( !feof(RESULTADOS) )
+   {
+      //Dependiendo del resultado hago tal cosa
+      if( res.codRes<0 )
+      {
+         actualizarPuntos(equipos,res.idEq1,res.codRes);
+      }
+      if( res.codRes>0 )
+      {
+         actualizarPuntos(equipos,res.idEq2,res.codRes);
+      }
+      if( res.codRes==0 )
+      {
+         actualizarPuntos(equipos,res.idEq1,res.idEq2,res.codRes);
+      }
+      //Modifico los contadores de la coleccion estadio
+      actualizarEstadio(estadio,res);
+   }
+   //ordeno los equipos para formar una tabla
+   ordenarEquipos(equipos);
+   //muestro dicha tabla
+   mostrarTabla(equipos);
+   //muestro los contadores de la coleccion de estadios
+   mostrarEstadios(estadio);
+   return 0;
+}
+

@@ -1,0 +1,50 @@
+#include <iostream>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/tads/Coll.hpp"
+#include "biblioteca/funciones/strings.hpp"
+using namespace std;
+
+int main()
+{
+   string s,x,nombre;
+   int i,a = 1,d = 0,f = 1,g,h = 0;
+   cout<<"Ingrese cadena"<<endl;
+   cin>>s;
+   i = charCount(s,'|')+1;
+   while( a<=i )
+   {
+      if( a!=i )
+      {
+         x = substring(s,d,indexOfN(s,'|',a)+1);
+      }
+      else
+      {
+         x = substring(s,d);
+      }
+      g = charCount(x,',')+1;
+      while( f<=g )
+      {
+         if( f==1 )
+         {
+            cout<<"Nombre: "<<substring(x,h,indexOfN(x,',',f)+1)<<endl;
+         }
+         if( f==2 )
+         {
+            cout<<"Fecha de acimiento: "<<substring(x,h,indexOfN(x,',',f)+1)<<endl;
+         }
+         if( f==3 )
+         {
+            cout<<"Nacionalidad: "<<substring(x,h)<<endl;
+         }
+         h = indexOfN(x,',',f)+1;
+         f++;
+
+      }
+      d = indexOfN(s,'|',a)+1;
+      a++;
+      f=1;
+
+   }
+   return 0;
+}
+

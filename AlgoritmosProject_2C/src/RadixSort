@@ -1,0 +1,164 @@
+//============================================================================
+// Name        : X.cpp
+// Author      : 
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
+#include <iostream>
+#include "biblioteca/tads/Arr.hpp"
+#include "biblioteca/tads/Map.hpp"
+#include "biblioteca/tads/List.hpp"
+#include "biblioteca/tads/Stack.hpp"
+#include "biblioteca/tads/Queue.hpp"
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/funciones/files.hpp"
+#include "biblioteca/funciones/arrays.hpp"
+using namespace std;
+
+void radixSort(string a[], int len)
+{
+   int mayor = 0,aux = 0;
+   for( int i = 0; i<len; i++ )
+   {
+      aux = stringToInt(a[i]);
+
+      if( aux>mayor )
+      {
+         mayor = aux;
+      }
+   }
+   string may = intToString(mayor);
+   for( int i = 0; i<len; i++ )
+   {
+      lpad(a[i],length(may),'0');
+
+   }
+   Arr<string> l0 = arr<string>();
+   Arr<string> l1 = arr<string>();
+   Arr<string> l2 = arr<string>();
+   Arr<string> l3 = arr<string>();
+   Arr<string> l4 = arr<string>();
+   Arr<string> l5 = arr<string>();
+   Arr<string> l6 = arr<string>();
+   Arr<string> l7 = arr<string>();
+   Arr<string> l8 = arr<string>();
+   Arr<string> l9 = arr<string>();
+
+   for( int i = 0; i<length(may); i++ )
+   {
+
+      for( int f = 0; f<len; f++ )
+      {
+         int x = getDigit(stringToInt(a[f]),i);
+         if( x==0 )
+         {
+            arrAdd<string>(l0,a[f]);
+         }
+         if( x==1 )
+         {
+            arrAdd<string>(l1,a[f]);
+         }
+         if( x==2 )
+         {
+            arrAdd<string>(l2,a[f]);
+         }
+         if( x==3 )
+         {
+            arrAdd<string>(l3,a[f]);
+         }
+         if( x==4 )
+         {
+            arrAdd<string>(l4,a[f]);
+         }
+         if( x==5 )
+         {
+            arrAdd<string>(l5,a[f]);
+         }
+         if( x==6 )
+         {
+            arrAdd<string>(l6,a[f]);
+         }
+         if( x==7 )
+         {
+            arrAdd<string>(l7,a[f]);
+         }
+         if( x==8 )
+         {
+            arrAdd<string>(l8,a[f]);
+         }
+         if( x==9 )
+         {
+            arrAdd<string>(l9,a[f]);
+         }
+      }
+      len = 0;
+      for( int i = 0; i<arrSize<string>(l0); i++ )
+      {
+         add<string>(a,len,lpad(*arrGet<string>(l0,i),length(may),'0'));
+      }
+      for( int i = 0; i<arrSize<string>(l1); i++ )
+      {
+         add<string>(a,len,*arrGet<string>(l1,i));
+      }
+      for( int i = 0; i<arrSize<string>(l2); i++ )
+      {
+         add<string>(a,len,*arrGet<string>(l2,i));
+      }
+      for( int i = 0; i<arrSize<string>(l3); i++ )
+      {
+         add<string>(a,len,*arrGet<string>(l3,i));
+      }
+      for( int i = 0; i<arrSize<string>(l4); i++ )
+      {
+         add<string>(a,len,*arrGet<string>(l4,i));
+      }
+      for( int i = 0; i<arrSize<string>(l5); i++ )
+      {
+         add<string>(a,len,*arrGet<string>(l5,i));
+      }
+      for( int i = 0; i<arrSize<string>(l6); i++ )
+      {
+         add<string>(a,len,*arrGet<string>(l6,i));
+      }
+      for( int i = 0; i<arrSize<string>(l7); i++ )
+      {
+         add<string>(a,len,*arrGet<string>(l7,i));
+      }
+      for( int i = 0; i<arrSize<string>(l8); i++ )
+      {
+         add<string>(a,len,*arrGet<string>(l8,i));
+      }
+      for( int i = 0; i<arrSize<string>(l9); i++ )
+      {
+         add<string>(a,len,*arrGet<string>(l9,i));
+      }
+      arrRemoveAll<string>(l0);
+      arrRemoveAll<string>(l1);
+      arrRemoveAll<string>(l2);
+      arrRemoveAll<string>(l3);
+      arrRemoveAll<string>(l4);
+      arrRemoveAll<string>(l5);
+      arrRemoveAll<string>(l6);
+      arrRemoveAll<string>(l7);
+      arrRemoveAll<string>(l8);
+      arrRemoveAll<string>(l9);
+   }
+}
+
+int main()
+{
+   string a[] = { "9421", "4243", "0003", "1421", "0231", "3001", "0032", "0063" };
+   int len = 8;
+
+   radixSort(a,len);
+
+   for( int i = 0; i<len; i++ )
+   {
+      cout<<a[i]<<endl;
+   }
+
+   return 0;
+}

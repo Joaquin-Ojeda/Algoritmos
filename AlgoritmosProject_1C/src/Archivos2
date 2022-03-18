@@ -1,0 +1,70 @@
+#include <iostream>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/tads/Coll.hpp"
+#include "biblioteca/funciones/strings.hpp"
+#include "mistads/BigInt.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/funciones/files.hpp"
+using namespace std;
+
+int main()
+{
+   FILE* f = fopen("Ejercicio2.txt","r+b");
+   char x;
+   string y;
+   int a,max = 0,p = -1,h;
+   Coll<int> pos = collCreate<int>();
+   for( int i = 0; !feof(f); i++ )
+   {
+      x = read<char>(f);
+      if( x!=',' )
+      {
+         y = y+x;
+      }
+      else
+      {
+         a = stringToInt(y);
+         p++;
+         if( a>max )
+         {
+            collRemoveAll(pos);
+            max = a;
+            h = collAdd(pos,p,intToString);
+         }
+         else
+         {
+            if( a==max )
+            {
+               h = collAdd(pos,p,intToString);
+            }
+         }
+
+         y = "";
+      }
+   }
+   a = stringToInt(y);
+   p++;
+   if( a>max )
+   {
+      collRemoveAll(pos);
+      max = a;
+      h = collAdd(pos,p,intToString);
+   }
+   else
+   {
+      if( a==max )
+      {
+         h = collAdd(pos,p,intToString);
+      }
+   }
+   cout<<"El mayor es: "<<max<<endl;
+   cout<<"Se encontro en las posiciones: "<<endl;
+   while( collHasNext(pos) )
+   {
+      h = collNext(pos,stringToInt);
+      cout<<h<<endl;
+   }
+   fclose(f);
+   return 0;
+}
+

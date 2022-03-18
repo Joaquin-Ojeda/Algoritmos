@@ -1,0 +1,56 @@
+#include <iostream>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/tads/Coll.hpp"
+#include "biblioteca/funciones/strings.hpp"
+#include "mistads/BigInt.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/funciones/files.hpp"
+using namespace std;
+
+int main()
+{
+   FILE* f = fopen("Ejercicio3.txt","r+b");
+   char x;
+   string y;
+   int a = 0,h;
+   Coll<string> nombres = collCreate<string>();
+   for( int i = 0; !feof(f); i++ )
+   {
+      x = read<char>(f);
+      if( x!='\n' )
+      {
+         y = y+x;
+      }
+      else
+      {
+         if( length(y)-1>a )
+         {
+            collRemoveAll(nombres);
+            a = length(y)-1;
+            h = collAdd(nombres,y,stringToString);
+         }
+         else
+         {
+            if( length(y)-1==a )
+            {
+               h = collAdd(nombres,y,stringToString);
+            }
+         }
+         y = "";
+      }
+   }
+   if( length(y)==a )
+   {
+      h = collAdd(nombres,y,stringToString);
+   }
+
+   cout<<"Los nombres de mayor longitud son: "<<endl;
+   while( collHasNext(nombres) )
+   {
+      y = collNext(nombres,stringToString);
+      cout<<y<<endl;
+   }
+   fclose(f);
+   return 0;
+}
+

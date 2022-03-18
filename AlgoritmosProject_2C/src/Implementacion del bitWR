@@ -1,0 +1,47 @@
+#ifndef _MAIN
+#define _MAIN
+
+#include <iostream>
+#include "biblioteca/tads/Arr.hpp"
+#include "biblioteca/tads/Map.hpp"
+#include "biblioteca/tads/List.hpp"
+#include "biblioteca/tads/Stack.hpp"
+#include "biblioteca/tads/Queue.hpp"
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/funciones/files.hpp"
+#include "biblioteca/funciones/arrays.hpp"
+#include "biblioteca/tads/BitWriter.hpp"
+#include "biblioteca/tads/BitReader.hpp"
+
+using namespace std;
+
+int main()
+{
+   FILE* f = fopen("arch.txt","w+b");
+   BitWriter bw=bitWriter(f);
+   bitWriterWrite(bw,1);
+   bitWriterWrite(bw,1);
+   bitWriterWrite(bw,0);
+   bitWriterWrite(bw,0);
+   bitWriterWrite(bw,0);
+   bitWriterWrite(bw,0);
+   bitWriterWrite(bw,1);
+   bitWriterWrite(bw,0);
+
+
+
+//   FILE* f = fopen("arch.txt","r+b");
+//   BitReader bin=bitReader(f);
+//   int x;
+//   cout<<read<unsigned short>(f)<<endl;
+//   while(!feof(bin.x))
+//   {
+//      x = bitReaderRead(bin);
+//      cout<<x<<endl;
+//   }
+
+   fclose(f);
+   return 0;
+}
+#endif

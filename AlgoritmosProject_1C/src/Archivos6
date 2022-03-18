@@ -1,0 +1,126 @@
+#include <iostream>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/tads/Coll.hpp"
+#include "biblioteca/funciones/strings.hpp"
+#include "mistads/BigInt.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/funciones/files.hpp"
+using namespace std;
+string leerNombre(FILE* f)
+{
+   string x;
+   char c = read<char>(f);
+   while( !feof(f) and c!='\n' )
+   {
+      x = x+c;
+      c = read<char>(f);
+   }
+   return x;
+}
+int cmpStringCant(string x,string f)
+{
+   int i;
+   substring(x,length(x)-1)>substring(f,length(f)-1)?i=1:substring(x,length(x)-1)==substring(f,length(f)-1)?i=0:i=-1;
+   return i;
+}
+
+
+
+int main()
+{
+   FILE* f = fopen("a.txt","r+b");
+   FILE* g = fopen("b.txt","r+b");
+   FILE* orden = fopen("c.txt","w+b");
+   Coll<string> h = collCreate<string>('\n');
+   Coll<string> rep = collCreate<string>('/');
+   string x = leerNombre(f),y = leerNombre(g),k;
+   int i,j,l = 0,s = 0;
+
+   if( fileSize<string>(f)>fileSize<string>(g) )
+   {
+      j = fileSize<string>(f);
+   }
+   else
+   {
+      j = fileSize<string>(g);
+   }
+   while( l<j )
+   {
+
+      if( x<y and x!="" )
+      {
+         if( collGetAt(h,collSize(h)-1,stringToString)!=x )
+         {
+            i = collAdd(h,x,stringToString);
+            if( s!=0 )
+            {
+               i = collAdd(rep,k+intToString(s),stringToString);
+               s = 0;
+            }
+         }
+         else
+         {
+            k = x;
+            s++;
+         }
+         x = leerNombre(f);
+      }
+      else
+      {
+         if( collGetAt(h,collSize(h)-1,stringToString)!=y )
+         {
+            i = collAdd(h,y,stringToString);
+            if( s!=0 )
+            {
+               i = collAdd(rep,k+intToString(s),stringToString);
+               s = 0;
+            }
+         }
+         else
+         {
+            k = y;
+            s++;
+         }
+         y = leerNombre(g);
+
+      }
+      l++;
+   }
+   if( x<y and x!="" )
+   {
+      if( collGetAt(h,collSize(h)-1,stringToString)!=x )
+      {
+         i = collAdd(h,x,stringToString);
+      }
+      x = leerNombre(f);
+   }
+   else
+   {
+      if( collGetAt(h,collSize(h)-1,stringToString)!=y )
+      {
+         i = collAdd(h,y,stringToString);
+      }
+      y = leerNombre(g);
+
+   }
+   while( collHasNext(h) )
+   {
+      k = collNext(h,stringToString);
+      cout<<k<<endl;
+      for( int cont = 0; k[cont]!='\0'; cont++ )
+      {
+         write(orden,k[cont]);
+      }
+      write(orden,'\n');
+   }
+   collSort(rep,cmpStringCant,stringToString,stringToString);
+   while( collHasNext(rep) )
+   {
+      k = collNext(rep,stringToString);
+      cout<<substring(k,0,length(k))<<": "<<substring(k,length(k)-1)<<endl;
+   }
+   fclose(f);
+   fclose(g);
+   return 0;
+}
+

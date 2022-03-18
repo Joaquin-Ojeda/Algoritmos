@@ -1,0 +1,84 @@
+#ifndef _MAIN
+#define _MAIN
+
+#include <iostream>
+#include "biblioteca/tads/Arr.hpp"
+#include "biblioteca/tads/Map.hpp"
+#include "biblioteca/tads/List.hpp"
+#include "biblioteca/tads/Stack.hpp"
+#include "biblioteca/tads/Queue.hpp"
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/funciones/files.hpp"
+#include "biblioteca/tads/HuffmanTree.hpp"
+#include "funciones.hpp"
+#include "biblioteca/tads/Fecha.hpp"
+
+Reserva leerReserva()
+{
+   Reserva res;
+   return res;
+}
+bool continuarOperando()
+{
+   return false;
+}
+
+//La estrategia seria ir leyendo las reservas e ir armando una lista con las que fueron rechazadas por exceso de capacidad.
+
+//1.Dicha lista estara formada por la estructura rFunciones, la cual tiene:
+//fun=la funcion de la reserva.
+//ob=la obra de la reserva.
+//tea=el teatro de la obra.
+//cant=una estructura que tendra un arr con la capacidad de cada sector del teatro "tea".
+//acep=un bool que define si la reserva a dicha funcion fue rechazada o no. Este va a ir cambiando con cada reserva nueva.
+//rechazadas=un contador para las rechazadas.
+
+
+using namespace std;
+
+int main()
+{
+   //abrimos los archivos.
+   FILE* obr=fopen("OBRA.dat","r+b");
+   FILE* teat=fopen("TEATRO.dat","r+b");
+
+   //creamos un map para cada archivo para solo recorrerlo 1 vez.
+   //el de obras estara ordenado por la idObra que sera la key.
+   //el de teatros por idTeatro como key.
+   Map<int,Obra> obras=map<int,Obra>();
+   Map<int,Teatro> teatros=map<int,Teatro>();
+   obras=pasarArchivosAMap<int,Obra>(obr);
+   teatros=pasarArchivosAMap<int,Teatro>(teat);
+   //creamos una lista para guardar las reservas rechazadas y mas adelante poder armar la salida del programa.
+   List<rFunciones> rechazada=list<rFunciones>();
+   //creamos otra lista de rFunciones para aumentar el contador.
+   List<rFunciones> func=list<rFunciones>();
+   //como FuncionesProgramadas se puede usar 1 vez por obra hacemos una lista para guardar dichas funciones por obra.
+   List<FuncionesObra>funobr=list<FuncionesObra>();
+   //creamos una variable reserva para iterar.
+   Reserva res;
+   while(continuarOperando())
+   {
+      res=leerReserva();
+      FuncionesObra* f=listFind<FuncionesObra>(funobr,res.idObra,cmpFuncionesObraInt);
+      if(f==NULL)
+      {
+         List<Funcion> fu=funcionesProgramadas(res.idObra);
+         f->lista=fu;
+      }
+      //la funcion devuelve true si se admite la reserva o false si se rechaza.
+      rFunciones cap=operarReserva(res,obras,teatros,func,funobr);
+      //si se rechaza vamos llenando la lista de rechazados.
+      if(cap.acep==false)
+      {
+         listAdd<rFunciones>(rechazada,cap);
+      }
+   }
+   //salimos del while y mostramos lo que se pide.
+   mostrarRechazadas(rechazada);
+
+
+   return 0;
+}
+#endif

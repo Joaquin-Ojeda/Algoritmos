@@ -1,0 +1,54 @@
+#include <iostream>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/tads/Coll.hpp"
+#include "biblioteca/funciones/strings.hpp"
+#include "mistads/BigInt.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/funciones/files.hpp"
+using namespace std;
+
+//int main()
+//{
+//   FILE* f=fopen("Ejercicio1.xx","w+b");
+//   cout<<"Ingrese numeros"<<endl;
+//   int x;
+//   cin>>x;
+//   while(x>=0)
+//   {
+//      write(f,x);
+//      cout<<"Ingrese numero"<<endl;
+//      cin>>x;
+//   }
+//   return 0;
+//}
+int main()
+{
+   FILE* f=fopen("Ejercicio1.xx","r+b");
+   int max=-1,x,h;
+   Coll<int>pos=collCreate<int>();
+   for(int i=0;!feof(f);i++)
+   {
+      x=read<int>(f);
+      if(x>max)
+      {
+         collRemoveAll(pos);
+         max=x;
+         h=collAdd<int>(pos,i,intToString);
+      }
+      else
+      {
+         if(x==max)
+         {
+            h=collAdd<int>(pos,i,intToString);
+         }
+      }
+   }
+   cout<<"El Mayor es: "<<max<<endl<<"Posiciones: ";
+   while(collHasNext(pos))
+   {
+      h=collNext(pos,stringToInt);
+      cout<<h<<endl;
+   }
+
+   return 0;
+}

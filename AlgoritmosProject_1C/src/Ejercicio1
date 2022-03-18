@@ -1,0 +1,32 @@
+#include <iostream>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/tads/Coll.hpp"
+#include "biblioteca/funciones/strings.hpp"
+using namespace std;
+
+int main()
+{
+   string n;
+   int x = 0,y = 0,a = 0;
+   cout<<"Ingrese nombre: "<<endl;
+   cin>>n;
+   for( int i = 0; n[i]!='\0'; i++ )
+   {
+      x = x+((int)n[i]-64);
+   }
+   cout<<x<<endl;
+   while( x>9 )
+   {
+      y=0;
+      while( a<=digitCount(x) )
+      {
+         y = y+getDigit(x,a);
+         a++;
+      }
+      x = y;
+      a=0;
+   }
+   cout<<y<<endl;
+   return 0;
+}
+

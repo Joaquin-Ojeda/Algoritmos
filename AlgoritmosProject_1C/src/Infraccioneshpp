@@ -1,0 +1,237 @@
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <string.h>
+#include <stdlib.h>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/tads/Coll.hpp"
+using namespace std;
+
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <string.h>
+#include <stdlib.h>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/tads/Coll.hpp"
+using namespace std;
+string to_string(double x)
+{
+   return "";
+}
+int stoi(string s)
+{
+   return 0;
+}
+double stod(string s)
+{
+   return 0;
+}
+struct TipoInfr
+{
+   int idTipoInfr;
+   char descr[20];
+   double imp;
+   int diasPP;
+   double dtoPP;
+};
+
+struct Infr
+{
+   char pat[20];
+   int fecha;
+   int idTipoInfr;
+};
+
+struct RDia
+{
+   int dia;
+   int acum;
+   double tota;
+};
+
+string tipoInfrToString(TipoInfr x)
+{
+   char sep = 1;
+   string sIdTipoInfr=to_string(x.idTipoInfr);
+   string sDescr=x.descr;
+   string sImp=to_string(x.imp);
+   string sDiasPP=to_string(x.diasPP);
+   string sDtoPP=to_string(x.dtoPP);
+   return sIdTipoInfr+sep+sDescr+sep+sImp+sep+sDiasPP+sep+sDtoPP;
+}
+
+TipoInfr tipoInfrFromString(string s)
+{
+   char sep = 1;
+   TipoInfr x;
+   string t0 = getTokenAt(s,sep,0);
+   x.idTipoInfr=stoi(t0);
+   string t1 = getTokenAt(s,sep,1);
+   strcpy(x.descr,t1.c_str());
+   string t2 = getTokenAt(s,sep,2);
+   x.imp=stod(t2);
+   string t3 = getTokenAt(s,sep,3);
+   x.diasPP=stoi(t3);
+   string t4 = getTokenAt(s,sep,4);
+   x.dtoPP=stod(t4);
+   return x;
+}
+
+string tipoInfrToDebug(TipoInfr x)
+{
+   stringstream sout;
+   sout<< "[";
+   sout << x.idTipoInfr;
+   sout << ",";
+   sout << x.descr;
+   sout << ",";
+   sout << x.imp;
+   sout << ",";
+   sout << x.diasPP;
+   sout << ",";
+   sout << x.dtoPP;
+   sout<< "]";
+   return sout.str();
+}
+
+TipoInfr tipoInfr(int idTipoInfr,string descr,double imp,int diasPP,double dtoPP)
+{
+   TipoInfr a;
+   a.idTipoInfr = idTipoInfr;
+   strcpy(a.descr,descr.c_str());
+   a.imp = imp;
+   a.diasPP = diasPP;
+   a.dtoPP = dtoPP;
+   return a;
+}
+
+bool tipoInfrEquals(TipoInfr a,TipoInfr b)
+{
+   if(a.idTipoInfr!=b.idTipoInfr) return false;
+   if(a.imp!=b.imp) return false;
+   if(a.diasPP!=b.diasPP) return false;
+   if(a.dtoPP!=b.dtoPP) return false;
+   return true;
+}
+
+string infrToString(Infr x)
+{
+   char sep = 2;
+   string sPat=x.pat;
+   string sFecha=to_string(x.fecha);
+   string sIdTipoInfr=to_string(x.idTipoInfr);
+   return sPat+sep+sFecha+sep+sIdTipoInfr;
+}
+
+Infr infrFromString(string s)
+{
+   char sep = 2;
+   Infr x;
+   string t0 = getTokenAt(s,sep,0);
+   strcpy(x.pat,t0.c_str());
+   string t1 = getTokenAt(s,sep,1);
+   x.fecha=stoi(t1);
+   string t2 = getTokenAt(s,sep,2);
+   x.idTipoInfr=stoi(t2);
+   return x;
+}
+
+string infrToDebug(Infr x)
+{
+   stringstream sout;
+   sout<< "[";
+   sout << x.pat;
+   sout << ",";
+   sout << x.fecha;
+   sout << ",";
+   sout << x.idTipoInfr;
+   sout<< "]";
+   return sout.str();
+}
+
+Infr infr(string pat,int fecha,int idTipoInfr)
+{
+   Infr a;
+   strcpy(a.pat,pat.c_str());
+   a.fecha = fecha;
+   a.idTipoInfr = idTipoInfr;
+   return a;
+}
+
+bool infrEquals(Infr a,Infr b)
+{
+   if(a.fecha!=b.fecha) return false;
+   if(a.idTipoInfr!=b.idTipoInfr) return false;
+   return true;
+}
+
+string rDiaToString(RDia x)
+{
+   char sep = 3;
+   string sDia=to_string(x.dia);
+   string sAcum=to_string(x.acum);
+   string sTota=to_string(x.tota);
+   return sDia+sep+sAcum+sep+sTota;
+}
+
+RDia rDiaFromString(string s)
+{
+   char sep = 3;
+   RDia x;
+   string t0 = getTokenAt(s,sep,0);
+   x.dia=stoi(t0);
+   string t1 = getTokenAt(s,sep,1);
+   x.acum=stoi(t1);
+   string t2 = getTokenAt(s,sep,2);
+   x.tota=stod(t2);
+   return x;
+}
+
+string rDiaToDebug(RDia x)
+{
+   stringstream sout;
+   sout<< "[";
+   sout << x.dia;
+   sout << ",";
+   sout << x.acum;
+   sout << ",";
+   sout << x.tota;
+   sout<< "]";
+   return sout.str();
+}
+
+RDia rDia(int dia,int acum,double tota)
+{
+   RDia b;
+   b.dia = dia;
+   b.acum = acum;
+   b.tota = tota;
+   return b;
+}
+
+bool rDiaEquals(RDia a,RDia b)
+{
+   if(a.dia!=b.dia) return false;
+   if(a.acum!=b.acum) return false;
+   if(a.tota!=b.tota) return false;
+   return true;
+}
+
+// TAD FECHA
+int fechaDifEnDias(int f1,int f2)
+{
+   return 0;
+}
+
+int fechaHoy()
+{
+   return 0;
+}
+
+int fechaDia(int f)
+{
+   return 0;
+}

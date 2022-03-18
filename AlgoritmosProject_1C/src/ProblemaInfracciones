@@ -1,0 +1,128 @@
+#include <iostream>
+#include <string>
+#include<string.h>
+#include <stdlib.h>
+#include "biblioteca/funciones/strings.hpp"
+#include "biblioteca/funciones/tokens.hpp"
+#include "biblioteca/funciones/files.hpp"
+#include "biblioteca/tads/Coll.hpp"
+#include "programaPrincipal.hpp"
+
+using namespace std;
+
+Coll<TipoInfr> subirTiposoInfraccion()
+{
+   FILE* f=fopen("TiposDeInfraccion","r+b");
+   TipoInfr infr;
+   infr=read<TipoInfr>(f);
+
+   fclose(f);
+   return{};
+}
+
+TipoInfr buscarTipoInfr(Coll<TipoInfr> tipos, int id)
+{
+   TipoInfr infr;
+   infr = collNext(tipos,tipoInfrFromString);
+   while( collHasNext(tipos) )
+   {
+      if( infr.idTipoInfr==id )
+      {
+         return infr;
+      }
+      else
+      {
+         infr = collNext(tipos,tipoInfrFromString);
+      }
+   }
+   return
+   {};
+}
+
+double calcularDto(TipoInfr ti, int fecha)
+{
+   int dif = fechaDifEnDias(fecha,fechaHoy());
+   if( dif<=ti.diasPP )
+   {
+      return ti.imp*ti.dtoPP;
+   }
+   return 0;
+}
+
+void actualizarEstadDia(Coll<RDia>& dias, int fecha, double imp)
+{
+   RDia x;
+   x = collNext(dias,rDiaFromString);
+   int d = fechaDia(fecha);
+   while( collHasNext(dias) )
+   {
+      if( d==x.dia )
+      {
+         x.acum++;
+         x.tota += imp;
+      }
+      x = collNext(dias,rDiaFromString);
+   }
+}
+
+void mostrarEstadDia(Coll<RDia> dias)
+{
+   RDia x;
+   x = collNext(dias,rDiaFromString);
+   while(collHasNext(dias))
+   {
+      cout<<"Dia: "<<x.dia<<endl<<"Infracciones: "<<x.acum<<endl<<"Total: "<<x.tota;
+      x = collNext(dias,rDiaFromString);
+   }
+}
+
+int main()
+{
+   Coll<TipoInfr> tipos = subirTiposoInfraccion();
+   Coll<RDia> dias = collCreate<RDia>();
+
+   FILE* f = fopen("INFRACCIONES.dat","r+b");
+
+   Infr i = read<Infr>(f);
+   while( !feof(f) )
+   {
+      string patAnt = i.pat;
+
+      // acumuladores
+      double acumImp = 0;
+      double acumDto = 0;
+      double acumTotal = 0;
+
+      // imprimo patente
+      cout<<"Patente:"<<patAnt<<endl;
+
+      while( !feof(f)&&patAnt==i.pat )
+      {
+         TipoInfr ti = buscarTipoInfr(tipos,i.idTipoInfr);
+         double dto = calcularDto(ti,i.fecha);
+
+         // imprimo items
+         string desc = ti.descr;
+         double totalAPagar = ti.imp-dto;
+         cout<<i.fecha<<desc<<ti.imp<<dto<<totalAPagar<<endl;
+
+         acumImp += ti.imp;
+         acumDto += dto;
+         acumTotal += totalAPagar;
+
+         // actualizo estad x dia
+         actualizarEstadDia(dias,i.fecha,ti.imp);
+
+         i = read<Infr>(f);
+      }
+
+      cout<<"TOTAL: "<<acumImp<<acumDto<<acumTotal<<endl;
+   }
+
+   // mostrar punto 2
+   mostrarEstadDia(dias);
+
+   fclose(f);
+
+   return 0;
+}
